@@ -1,39 +1,57 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Personal homepage starter / 个人主页框架">
-  <title>My Homepage / 我的主页</title>
-  <style>
-    :root { color-scheme: light dark; font-family: system-ui, sans-serif; line-height: 1.7; }
-    body { max-width: 760px; margin: 0 auto; padding: 56px 24px; }
-    header { border-bottom: 2px solid #6089c4; padding-bottom: 24px; }
-    section { margin-top: 32px; }
-    h1, h2 { line-height: 1.3; }
-    .placeholder { border-left: 3px solid #6089c4; padding: 12px 18px; }
-    footer { margin-top: 48px; font-size: .9rem; opacity: .75; }
-  </style>
+  <meta name="description" content="ROBO_HEAD_020 的个人宇宙。无问西东，时时正念，无限进步。">
+  <meta name="theme-color" content="#050910">
+  <title>ROBO_HEAD_020 · A little universe</title>
+  <link rel="icon" href="assets/robo-avatar.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+  <script src="universe.js" defer></script>
 </head>
 <body>
-  <!-- Starter only: replace all bracketed placeholders before publishing. -->
-  <!-- 仅为框架：发布前请替换所有方括号占位内容。不要填写学号或私密信息。 -->
-  <header>
-    <h1>ROBO_HEAD_020</h1>
-    <p>无问西东, 时时正念, 无限进步</p>
+  <canvas id="universe" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <header class="masthead">
+    <a class="home-mark" href="#home" aria-label="返回我的宇宙"><span class="orbit-mark" aria-hidden="true">✳</span> ROBO'S UNIVERSE</a>
+    <span class="live-label"><i aria-hidden="true"></i> 一小片宇宙，正在运行</span>
   </header>
-  <main>
-    <section aria-labelledby="about">
-      <h2 id="about">About me / 关于我</h2>
-      <p class="placeholder">想在宇宙的尽头烤棉花糖</p>
-    </section>
-    <section aria-labelledby="interests">
-      <h2 id="interests">Interests / 兴趣</h2>
-      <ul>
-        <li>尝试新事物</li>
-      </ul>
-    </section>
+  <main id="home">
+    <div class="profile">
+      <div class="identity">
+        <button class="avatar-button" id="avatar" aria-label="查看机器人的最高指令" aria-expanded="false" aria-controls="robot-overlay">
+          <img src="assets/robo-avatar.png" width="92" height="92" alt="微笑的蓝屏机器人头像">
+          <span class="avatar-orbit" aria-hidden="true"></span><span class="avatar-signal" aria-hidden="true"></span>
+        </button>
+        <span class="identity-note">CARBON-BASED EXPLORER<br><span>地球居民 / 好奇心驱动</span></span>
+      </div>
+      <div class="name-block">
+        <p class="eyebrow">HELLO, FELLOW TRAVELER.</p>
+        <h1><button id="name-trigger" class="name-trigger" data-gbu aria-pressed="false" title="点击，让群星说一句 GBU">ROBO_HEAD<span class="name-index">_020<span class="tiny-star" aria-hidden="true">✦</span></span></button></h1>
+        <button class="motto" data-gbu aria-pressed="false">无问西东, 时时正念, 无限进步<span class="inline-arrow" aria-hidden="true">↗</span></button>
+      </div>
+      <div class="chapters">
+        <section class="chapter about-chapter" aria-labelledby="about-heading">
+          <h2 id="about-heading"><button data-scene="outer" aria-pressed="false">About me <span>关于我</span><span class="section-arrow" aria-hidden="true">↗</span></button></h2>
+          <button class="about-line" data-scene="outer" aria-pressed="false">想在宇宙的尽头烤棉花糖<span class="little-spark" aria-hidden="true">✧</span></button>
+        </section>
+        <section class="chapter interests-chapter" aria-labelledby="interests-heading">
+          <h2 id="interests-heading"><button data-scene="interest" aria-pressed="false">Interests <span>兴趣</span><span class="section-arrow" aria-hidden="true">↗</span></button></h2>
+          <p>尝试新事物<span class="interest-dot" aria-hidden="true">·</span>保持好奇</p>
+        </section>
+      </div>
+      <p class="personal-note">在浩瀚之中，做一个有温度的小小存在。</p>
+    </div>
+    <div class="constellation-caption" aria-hidden="true"><span class="caption-line"></span><span id="scene-label">A SMALL SMILE IN A BIG UNIVERSE</span><span class="caption-sub" id="scene-hint">拨动星光，给宇宙一点回应</span></div>
   </main>
-  <footer>Personal homepage / 个人主页</footer>
+  <div class="outer-caption" aria-hidden="true"><span>THERE IS MORE TO EXPLORE.</span><p>宇宙很大，先坐下来烤一颗棉花糖。</p></div>
+  <button class="return-button" id="return-button" hidden>← 返回我的宇宙 <span>ESC</span></button>
+  <aside class="robot-overlay" id="robot-overlay" aria-label="机器人最高指令" aria-hidden="true" inert>
+    <div class="robot-panel"><span class="robot-kicker">ROBO / DIRECTIVE UPDATE</span><img src="assets/robo-full.png" width="640" height="852" alt="手持玫瑰、伸出手掌的微笑机器人"><p class="directive">更新最高指令<span class="loading-dots">...</span><span class="directive-done">完成</span></p><span class="robot-footnote">保持温柔。保持好奇。</span></div>
+  </aside>
+  <footer class="page-footer"><span>EARTH <span class="footer-cross">+</span> SOLAR SYSTEM <span class="footer-cross">+</span> MILKY WAY</span><div class="footer-actions"><span class="interaction-tip">移动鼠标探索星群</span><button id="motion-toggle" aria-pressed="false" aria-label="暂停星空动画">暂停动画 <span aria-hidden="true">Ⅱ</span></button></div></footer>
+  <p class="sr-only" id="scene-status" role="status" aria-live="polite">星空已就绪，右侧是可互动的笑脸星团。</p>
+  <noscript><p class="noscript-note">开启 JavaScript，即可观看银河与互动星群。</p></noscript>
 </body>
 </html>
