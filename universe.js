@@ -74,16 +74,6 @@
     return points.map(p => ({ x: cx + (p.x - sourceW / 2) * s, y: cy + (p.y - sourceH / 2) * s, color: p.color }));
   }
 
-  function flameShape(p, x, baseY, h, w, color) {
-    p.fillStyle = color;
-    p.beginPath();
-    p.moveTo(x - w / 2, baseY);
-    p.bezierCurveTo(x - w * .75, baseY - h * .32, x - w * .18, baseY - h * .55, x, baseY - h);
-    p.bezierCurveTo(x + w * .18, baseY - h * .55, x + w * .75, baseY - h * .32, x + w / 2, baseY);
-    p.quadraticCurveTo(x, baseY + w * .22, x - w / 2, baseY);
-    p.fill();
-  }
-
   function makeOuter() {
     const c = document.createElement('canvas');
     c.width = mobile ? 600 : 1150; c.height = mobile ? 850 : 700;
@@ -94,45 +84,77 @@
     p.textAlign = 'center'; p.fillStyle = '#f2b87e';
     p.font = `400 ${mobile ? 42 : 58}px Georgia, serif`; p.fillText('O U T E R', tx, ty);
     p.font = `600 ${mobile ? 110 : 158}px Georgia, serif`; p.fillText('WILDS', tx, ty + (mobile ? 108 : 140));
-    p.fillStyle = '#e6c8a2'; p.font = `${mobile ? 17 : 22}px "Microsoft YaHei", sans-serif`;
-    p.fillText('星 际 拓 荒', tx, ty + (mobile ? 158 : 196));
-    // Right: a campfire made of nothing but stars. Stone ring first.
-    const fx = mobile ? 300 : 805, base = mobile ? 690 : 565;
-    const ringX = 108 * cs, ringY = 34 * cs;
+    // Right: a campfire made of nothing but stars, sized up and lifted so its
+    // flame tip meets the top of the text and its heart sits on the text midline.
+    const fx = mobile ? 300 : 812, base = mobile ? 665 : 540;
+    const fs = cs * 1.18;
+    const ringX = 108 * fs, ringY = 34 * fs;
     for (let i = 0; i < 13; i++) {
-      const a = i / 13 * TAU, sr = (13 + (i * 7) % 8) * cs;
-      p.save(); p.translate(fx + Math.cos(a) * ringX, base + 26 * cs + Math.sin(a) * ringY); p.rotate(a + .4);
+      const a = i / 13 * TAU, sr = (13 + (i * 7) % 8) * fs;
+      p.save(); p.translate(fx + Math.cos(a) * ringX, base + 26 * fs + Math.sin(a) * ringY); p.rotate(a + .4);
       p.fillStyle = i % 3 ? '#98a0a8' : '#7d8894';
       p.beginPath(); p.ellipse(0, 0, sr, sr * .78, 0, 0, TAU); p.fill(); p.restore();
     }
     // Crossed logs under the flame.
-    p.strokeStyle = '#9a5a34'; p.lineWidth = 20 * cs; p.lineCap = 'round';
-    p.beginPath(); p.moveTo(fx - 72 * cs, base + 22 * cs); p.lineTo(fx + 72 * cs, base - 6 * cs);
-    p.moveTo(fx + 72 * cs, base + 22 * cs); p.lineTo(fx - 72 * cs, base - 6 * cs); p.stroke();
-    p.strokeStyle = '#7c4a30'; p.beginPath(); p.moveTo(fx - 82 * cs, base + 14 * cs); p.lineTo(fx + 82 * cs, base + 14 * cs); p.stroke();
+    p.strokeStyle = '#9a5a34'; p.lineWidth = 20 * fs; p.lineCap = 'round';
+    p.beginPath(); p.moveTo(fx - 72 * fs, base + 22 * fs); p.lineTo(fx + 72 * fs, base - 6 * fs);
+    p.moveTo(fx + 72 * fs, base + 22 * fs); p.lineTo(fx - 72 * fs, base - 6 * fs); p.stroke();
+    p.strokeStyle = '#7c4a30'; p.beginPath(); p.moveTo(fx - 82 * fs, base + 14 * fs); p.lineTo(fx + 82 * fs, base + 14 * fs); p.stroke();
     // Ember bed: hot little stars where the logs meet.
     for (let i = 0; i < 46; i++) {
-      const a = Math.random() * TAU, r = Math.random() * 34 * cs;
+      const a = Math.random() * TAU, r = Math.random() * 34 * fs;
       p.fillStyle = ['#fff0c0', '#f09040', '#c2581a'][i % 3];
-      p.beginPath(); p.arc(fx + Math.cos(a) * r * 1.3, base + 2 * cs + Math.sin(a) * r * .45, rand(1.5, 3.4) * cs, 0, TAU); p.fill();
-    }
-    // Layered flame: deep outer tongues, warm middle, near-white heart.
-    flameShape(p, fx - 46 * cs, base, 148 * cs, 66 * cs, '#c2581a');
-    flameShape(p, fx + 48 * cs, base, 128 * cs, 56 * cs, '#c2581a');
-    flameShape(p, fx, base, 262 * cs, 122 * cs, '#c2581a');
-    flameShape(p, fx - 8 * cs, base, 196 * cs, 78 * cs, '#f09040');
-    flameShape(p, fx + 5 * cs, base, 126 * cs, 44 * cs, '#ffd88a');
-    flameShape(p, fx - 5 * cs, base, 78 * cs, 26 * cs, '#fff2c8');
-    // Sparks escaping upward.
-    for (let i = 0; i < 22; i++) {
-      const t = Math.random(), y = base - (250 + t * 130) * cs, drift = Math.sin(i * 2.4) * (8 + t * 30) * cs;
-      p.fillStyle = i % 3 ? '#f09040' : '#fff0c0';
-      p.beginPath(); p.arc(fx + drift, y, rand(1, 2.6) * cs, 0, TAU); p.fill();
+      p.beginPath(); p.arc(fx + Math.cos(a) * r * 1.3, base + 2 * fs + Math.sin(a) * r * .45, rand(1.5, 3.4) * fs, 0, TAU); p.fill();
     }
     const scale = Math.min(w * .94 / c.width, h * .76 / c.height);
     const ox = (w - c.width * scale) / 2, oy = (h - c.height * scale) / 2 - h * .035;
-    outerMap = { scale, ox, oy, fx, fy: base, flameH: 262 * cs, flameW: 122 * cs };
-    return sample(c, 3).map(pt => ({ x: ox + pt.x * scale, y: oy + pt.y * scale, color: pt.color }));
+    // The flame is generated directly as stars, not sampled from a drawn shape:
+    // several tongues, each with its own height, width, sway speed and phase,
+    // over a bright wide bed hugging the logs, plus a few loose sparks.
+    const tongueSpec = [
+      { dx: 0, h: 275, w: 58, n: 230, amp: 9, speed: 2.1 },
+      { dx: -40, h: 208, w: 38, n: 130, amp: 11, speed: 2.7 },
+      { dx: 42, h: 188, w: 34, n: 110, amp: 12, speed: 2.4 },
+      { dx: 20, h: 242, w: 24, n: 90, amp: 14, speed: 3.1 },
+      { dx: -18, h: 152, w: 28, n: 80, amp: 10, speed: 3.4 },
+      { dx: -62, h: 122, w: 26, n: 55, amp: 9, speed: 2.9 },
+      { dx: 66, h: 106, w: 24, n: 50, amp: 9, speed: 3.3 },
+    ];
+    const flamePts = [];
+    tongueSpec.forEach((tg, ti) => {
+      for (let i = 0; i < tg.n; i++) {
+        const v = Math.pow(Math.random(), .7); // denser near the base
+        const half = tg.w * fs * Math.pow(1 - v, .8) * (.7 + .3 * Math.sin(v * 8 + ti * 1.7));
+        flamePts.push({
+          x: fx + tg.dx * fs * (1 - v * .45) + gaussian() * Math.max(1.5, half),
+          y: base - v * tg.h * fs, tongue: ti, apex: v * tg.h * fs + rand(20, 45) * fs,
+          color: v < .22 ? 6 : v < .55 ? 3 : 4,
+        });
+      }
+    });
+    for (let i = 0; i < 170; i++) {
+      const y = base - Math.abs(gaussian()) * 26 * fs;
+      flamePts.push({ x: fx + gaussian() * 62 * fs, y, tongue: -1, apex: base - y + rand(10, 25) * fs, color: Math.random() < .55 ? 6 : 3 });
+    }
+    for (let i = 0; i < 26; i++) {
+      flamePts.push({ x: fx + gaussian() * 26 * fs, y: base - rand(150, 260) * fs, tongue: -1, apex: rand(300, 400) * fs, color: 3 });
+    }
+    outerMap = {
+      fx: ox + fx * scale, base: oy + base * scale,
+      tongues: tongueSpec.map((tg, ti) => ({ amp: tg.amp * fs * scale, speed: tg.speed, phase: ti * 1.9 })),
+      bed: { amp: 2 * fs * scale, speed: 1.4, phase: 0 },
+    };
+    // Shuffle so flame stars are spread through the target list; particles are
+    // assigned by index, so appending them at the end would leave them starless.
+    const all = sample(c, 3).map(pt => ({ x: ox + pt.x * scale, y: oy + pt.y * scale, color: pt.color, flame: false }))
+      .concat(flamePts.map(pt => ({
+        x: ox + pt.x * scale, y: oy + pt.y * scale, color: pt.color,
+        flame: true, tongue: pt.tongue, apex: pt.apex * scale,
+      })));
+    for (let i = all.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]];
+    }
+    return all;
   }
 
   function layout() {
@@ -197,8 +219,22 @@
       const p = particles[i], target = shape[i % shape.length];
       if (animate) {
         const spread = scene === 'smile' ? 2.2 : .85;
-        const tx = target.x + Math.sin(time * .38 + p.phase) * spread;
-        const ty = target.y + Math.cos(time * .31 + p.phase * 1.5) * spread;
+        // Fast micro-shimmer plus a slow wander (period ~40-50s) so each star
+        // drifts in a small orbit around its home and the constellation flows.
+        const wander = 1.6 + p.size;
+        let tx = target.x + Math.sin(time * .38 + p.phase) * spread + Math.sin(time * .13 + p.phase * 2.7) * wander;
+        let ty = target.y + Math.cos(time * .31 + p.phase * 1.5) * spread + Math.cos(time * .17 + p.phase * 1.9) * wander;
+        if (scene === 'outer' && target.flame && outerMap) {
+          // Each star climbs to its own apex while its tongue sways and breathes,
+          // so the flame dances as overlapping tongues instead of a stiff triangle.
+          const tg = target.tongue >= 0 ? outerMap.tongues[target.tongue] : outerMap.bed;
+          const t = (time * (.13 + p.size * .05) + p.phase * .15915) % 1;
+          const breathe = 1 + .16 * Math.sin(time * tg.speed * .8 + tg.phase * 2.3);
+          const sway = tg.amp * Math.pow(t, 1.3) * Math.sin(time * tg.speed + tg.phase)
+                     + Math.sin(time * 1.6 + p.phase * 3) * 1.1;
+          tx = outerMap.fx + (target.x - outerMap.fx) * (1 - t * .3) + sway;
+          ty = outerMap.base - t * target.apex * breathe;
+        }
         p.vx += (tx - p.x) * spring * dt; p.vy += (ty - p.y) * spring * dt;
         if (pointer.active && !body.classList.contains('robot-open') && burst <= 0) {
           const dx = p.x - pointer.x, dy = p.y - pointer.y, dist = Math.hypot(dx, dy), range = mobile ? 80 : 135;
@@ -209,11 +245,17 @@
         }
         p.vx *= damp; p.vy *= damp; p.x += p.vx * dt; p.y += p.vy * dt;
       }
-      const alpha = .38 + .42 * (.5 + .5 * Math.sin(time * .7 + p.phase));
+      // Slow, deep twinkle for the shaped constellations too, matching the campfire scene.
+      const alpha = .34 + .5 * (.5 + .5 * Math.sin(time * .55 + p.phase));
       const c = scene === 'outer' ? target.color : p.color;
       if (scene === 'outer') {
         // Every particle is a glowing star so the scene reads as a pure constellation.
-        const a = .5 + .45 * (.5 + .5 * Math.sin(time * .7 + p.phase));
+        // Slow, deep twinkle keeps the whole constellation shimmering.
+        let a = .42 + .52 * (.5 + .5 * Math.sin(time * .55 + p.phase));
+        if (target.flame && outerMap && animate) {
+          const t = (time * (.13 + p.size * .05) + p.phase * .15915) % 1;
+          a *= t < .08 ? t * 12.5 : t < .55 ? 1 : (1 - t) / .45;
+        }
         stamp(p.x, p.y, p.size * 10, c, a);
         ctx.globalAlpha = a; ctx.fillStyle = colors[c];
         ctx.fillRect(p.x, p.y, Math.max(1, p.size * .8), Math.max(1, p.size * .8));
@@ -221,31 +263,6 @@
       else { ctx.globalAlpha = alpha; ctx.fillStyle = colors[c]; ctx.fillRect(p.x, p.y, p.size, p.size); }
     }
     ctx.globalAlpha = 1;
-  }
-  function drawFire(time) {
-    if (outerBlend < .01 || !outerMap) return;
-    const m = outerMap;
-    ctx.save();
-    ctx.translate(m.ox + m.fx * m.scale, m.oy + m.fy * m.scale); ctx.scale(m.scale, m.scale);
-    const pulse = 1 + Math.sin(time * 6.3) * .06;
-    const midY = -m.flameH * .35;
-    const light = ctx.createRadialGradient(0, midY, 4, 0, midY, m.flameH * 1.15 * pulse);
-    light.addColorStop(0, '#ffb25b3d'); light.addColorStop(.45, '#fca04b14'); light.addColorStop(1, '#fca04b00');
-    ctx.globalAlpha = outerBlend; ctx.fillStyle = light;
-    ctx.fillRect(-m.flameH, -m.flameH * 1.8, m.flameH * 2, m.flameH * 2.4);
-    // Three flickering flame layers echo the star-built flame and keep it alive.
-    ctx.globalAlpha = outerBlend * .5;
-    flameShape(ctx, Math.sin(time * 5.1) * 5, 0, m.flameH * pulse, m.flameW * (2 - pulse) * 1.05, '#e8763a');
-    ctx.globalAlpha = outerBlend * .6;
-    flameShape(ctx, Math.sin(time * 7.7 + 2) * 4, 0, m.flameH * .62 * (2 - pulse), m.flameW * .55, '#f5a04e');
-    ctx.globalAlpha = outerBlend * .85;
-    flameShape(ctx, Math.sin(time * 9.3) * 3, 0, m.flameH * .34 * pulse, m.flameW * .3, '#fff0c0');
-    for (let i = 0; i < 26; i++) {
-      const t = (time * .14 + i / 26) % 1;
-      ctx.globalAlpha = outerBlend * (1 - t) * .9; ctx.fillStyle = i % 3 ? '#ffd99a' : '#f09040';
-      ctx.fillRect(Math.sin(i * 4 + time * 1.3) * (4 + t * 28), -12 - t * m.flameH * 1.35, 1.6, 2.6);
-    }
-    ctx.restore(); ctx.globalAlpha = 1;
   }
   function render(now) {
     frame = 0;
@@ -256,7 +273,6 @@
     outerBlend += ((scene === 'outer' ? 1 : 0) - outerBlend) * (paused ? 1 : Math.min(1, dt * .045));
     drawBackground(clock);
     updateParticles(dt, clock, !paused);
-    drawFire(clock);
     burst = Math.max(0, burst - elapsed);
     if (!paused && !document.hidden) frame = requestAnimationFrame(render);
   }
